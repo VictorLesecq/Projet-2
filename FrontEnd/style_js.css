@@ -1,0 +1,22 @@
+.filtres{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap:10px;
+    margin-block: 51px;
+}
+button{
+	font-family: 'Syne';
+	color: #1D6154;
+    padding:9px 28px;
+    border: 1px solid #1D6154;
+    border-radius: 60px;
+    background-color: transparent;
+    cursor: pointer;
+}
+
+
+.selected{
+    background-color: #1D6154 ;
+    color:white
+};
