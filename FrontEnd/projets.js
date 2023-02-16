@@ -82,7 +82,6 @@ bouton_tous.addEventListener("click",function(){
 		selection=["Tous"];
 		gallery.innerHTML="";
 		creationCard(projets);
-		console.log(selection);
 		bouton_tous.classList.toggle("selected");
 	}
 });
@@ -106,6 +105,7 @@ for (let i=1;i<bouton_trier.length;i++){
 		if(selection.length===0){
 			bouton_tous.classList.toggle("selected");
 			selection=["Tous"];
+			gallery.innerHTML="";
 			creationCard(projets);
 		} else {
 			const projetsFiltrees = projets.filter(function(element){
