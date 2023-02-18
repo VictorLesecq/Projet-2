@@ -1,4 +1,14 @@
-.filtres{
+body{
+    background:#FFFEF8;
+}
+footer{
+    background: white;
+}
+footer nav ul{
+    padding:2em;
+    margin:0px;
+}
+.filters{
     display: flex;
     justify-content: center;
     align-items: center;
