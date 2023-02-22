@@ -2,6 +2,7 @@
    v2.0 | 20110126
    License: none (public domain)
 */
+@import  url("./style_js.css");
 
 html, body, div, span, applet, object, iframe,
 h1, h2, h3, h4, h5, h6, p, blockquote, pre,
@@ -52,11 +53,16 @@ body {
 	margin:auto;
 	font-family: 'Work Sans' ;
 	font-size: 14px;
+    background:#FFFEF8;
 }
 header {
 	display: flex;
 	justify-content: space-between;
 	margin: 50px 0
+}
+main{
+	color: #3D3D3D;
+
 }
 section {
 	margin: 50px 0
@@ -93,6 +99,10 @@ nav ul {
 nav li {
 	padding: 0 10px;
 	font-size: 1.2em;
+}
+nav li a {
+	text-decoration: none;
+	color:inherit;
 }
 
 li:hover {
@@ -137,36 +147,42 @@ li:hover {
 	width: 100%;
 
 }
-#contact {
+:is(#contact,#login) {
 	width: 50%;
 margin: auto;
 }
-#contact > * {
+:is(#contact,#login) > * {
 	text-align: center;
 
 }
-#contact h2{
+:is(#contact,#login) h2{
 	margin-bottom: 20px;
 }
-#contact form {
+:is(#contact,#login) form {
 	text-align: left;
 	margin-top:30px;
 	display: flex;
 	flex-direction: column;
 }
 
-#contact input {
+:is(#contact,#login) input {
 	height: 50px;
 	font-size: 1.2em;
 	border: none;
 	box-shadow: 0px 4px 14px rgba(0, 0, 0, 0.09);
 }
-#contact label {
+:is(#contact,#login) label {
 	margin: 2em 0 1em 0;
 }
-#contact textarea {
+:is(#contact,#login) textarea {
 	border: none;
 	box-shadow: 0px 4px 14px rgba(0, 0, 0, 0.09);
+}
+#login {
+	padding-bottom: 100px;
+}
+#login a {
+	color:inherit;
 }
 
 input[type="submit"]{
@@ -175,14 +191,19 @@ input[type="submit"]{
 	color: white;
 	background-color: #1D6154;
 	margin : 2em auto ;
-	width: 180px;
+	/* width: 180px; */
+	padding: 0px 50px;
 	text-align: center;
 	border-radius: 60px ;
+	cursor: pointer;
 }
-
+footer{
+    background: white;
+}
 footer nav ul {
 	display: flex;
 	justify-content: flex-end;
-	margin: 2em
+    padding:2em;
+    margin:0px;
 }
 

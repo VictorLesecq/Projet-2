@@ -9,10 +9,10 @@ dataProjectsLoading();
 // async function dataFiltersLoading(){
 // Filter list creation from the categorie loading from the API, if not in the LocalStorage
 if (filters === null){
-	const answer = await fetch("http://localhost:5678/api/categories");
-	const categories = await answer.json();
-	// const categories= await fetch("http://localhost:5678/api/categories")
-	// 	.then(data=>data.json());
+	// const answer = await fetch("http://localhost:5678/api/categories");
+	// const categories = await answer.json();
+	const categories= await fetch("http://localhost:5678/api/categories")
+		.then(data=>data.json());
 
 	//creation of the filter list from the API
 	filters = categories.map(function(a){
@@ -82,7 +82,6 @@ export function creationCard(list){
 		figure.appendChild(figCaption);
 	}
 }
-
 
 // function buttonAllClicked(projects){
 // 	const buttonAll=document.querySelector(".buttonAll");
