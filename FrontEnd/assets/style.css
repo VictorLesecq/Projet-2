@@ -28,6 +28,7 @@ time, mark, audio, video {
 article, aside, details, figcaption, figure,
 footer, header, hgroup, menu, nav, section {
 	display: block;
+	position: relative;
 }
 body {
 	line-height: 1;
@@ -40,7 +41,7 @@ blockquote, q {
 }
 blockquote:before, blockquote:after,
 q:before, q:after {
-	content: '';
+	/* content: ''; */
 	content: none;
 }
 table {
@@ -185,7 +186,7 @@ margin: auto;
 	color:inherit;
 }
 
-input[type="submit"]{
+main input[type="submit"]{
 	font-family: 'Syne';
 	font-weight: 700;
 	color: white;

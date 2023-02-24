@@ -17,5 +17,51 @@ button{
 
 .selected{
     background-color: #1D6154 ;
-    color:white
-};
+    color:white;
+}
+
+.editionModeTape{
+    height:60px;
+    background:#000000;
+    color:#FFFFFF;
+    display:flex;
+    justify-content: center;
+    align-items: center;
+    gap:20px;
+    position:sticky;
+    top:0;
+    font-family: Work Sans;
+    z-index:1000;
+}
+.fa-pen-to-square{
+    margin-right:10px;
+}
+#changeValidation{
+    padding:11px 23px;
+    text-align: center;
+	border-radius: 60px ;
+	cursor: pointer;
+    font-family: Work Sans;
+}
+.modifInfo-0, .modifInfo-1,.modifInfo-2{
+    margin-block:15px;
+    position: absolute;
+}
+:is(.modifInfo-0, .modifInfo-1,.modifInfo-2) a{
+    color:black;
+    text-decoration: none;
+}
+.modifInfo-0{
+    bottom:-50px;
+    margin-left:10%;
+}
+.modifInfo-1{
+    top:-50px;
+}
+.modifInfo-2{
+    display: inline;
+    transform: translate(20px,-50%);
+    font-size:14px;
+    font-weight: 400;
+    font-family: Work Sans;
+}

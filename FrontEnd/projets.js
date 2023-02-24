@@ -12,7 +12,10 @@ if (filters === null){
 	// const answer = await fetch("http://localhost:5678/api/categories");
 	// const categories = await answer.json();
 	const categories= await fetch("http://localhost:5678/api/categories")
-		.then(data=>data.json());
+		.then(data=>data.json())
+		.catch(function(){
+			alert("Problème de connexion avec le serveur, veuillez rafraichir la page")
+		});
 
 	//creation of the filter list from the API
 	filters = categories.map(function(a){
@@ -38,6 +41,11 @@ let selection=[all];
 buttonAllClicked(projects);
 buttonClicked(projects);
 
+let token = window.localStorage.getItem("token");
+if(token !== null){
+editionMode();
+functionLogout();
+}
 
 async function dataProjectsLoading(){
 //Project content loading from the API, if not in the LocalStorage
@@ -83,6 +91,42 @@ export function creationCard(list){
 	}
 }
 
+function editionMode(){
+	//Creation of the top tape 
+	const html = document.querySelector("html");
+	const tape = document.createElement("div");
+	tape.classList.add("editionModeTape");
+	tape.innerHTML="<p><i class='fa-regular fa-pen-to-square'></i>Mode Edition</p><input type='submit' id='changeValidation' value='publier les changements'>";
+	html.insertBefore(tape,html.firstChild.nextSibling);
+
+	//Add of all the link to modify the element
+	const modifInfo = document.createElement("div");
+	modifInfo.innerHTML="<p><a href='#'><i class='fa-regular fa-pen-to-square'></i>modifier</a></p>";
+	const intro = document.querySelector("#introduction");
+	const portfolio = document.querySelector("#portfolio");
+	const firstPlaceContainer = intro.firstElementChild;
+	const secondPlaceContainer = intro.firstElementChild.nextElementSibling;
+	const thirdPLaceContainer = portfolio.firstElementChild;
+	let modifTopicContainer = [firstPlaceContainer,secondPlaceContainer,thirdPLaceContainer];
+	for (let i in modifTopicContainer){
+		let elem = modifInfo.cloneNode(true);
+		elem.classList.add(`modifInfo-${i}`);
+		modifTopicContainer[i].insertBefore(elem,modifTopicContainer[i].firstElementChild);
+	};
+
+	//transformation of the link login to logout
+	const loginLink = document.querySelector("a[href='./login.html']");
+	loginLink.innerHTML="logout";
+	loginLink.classList.add("logout");
+}
+
+function functionLogout(){
+    const logoutButton = document.querySelector(".logout");
+    logoutButton.addEventListener("click",function(){
+        localStorage.removeItem("token");
+        document.location.href="./index.html";
+    })
+}
 // function buttonAllClicked(projects){
 // 	const buttonAll=document.querySelector(".buttonAll");
 // 	buttonAll.addEventListener("click",function(){
