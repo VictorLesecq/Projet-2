@@ -1,75 +1,81 @@
 import {buttonAllClicked,buttonClicked} from "./filters.js";
 
-let projects = window.localStorage.getItem("projects");
-let filters =window.localStorage.getItem("filters");
 const all="Tous";
-dataProjectsLoading();
-// dataFiltersLoading();
-
-// async function dataFiltersLoading(){
-// Filter list creation from the categorie loading from the API, if not in the LocalStorage
-if (filters === null){
-	// const answer = await fetch("http://localhost:5678/api/categories");
-	// const categories = await answer.json();
-	const categories= await fetch("http://localhost:5678/api/categories")
-		.then(data=>data.json())
-		.catch(function(){
-			alert("Problème de connexion avec le serveur, veuillez rafraichir la page")
-		});
-
-	//creation of the filter list from the API
-	filters = categories.map(function(a){
-		return a.name;
-	});
-	//add of the filter "all" in the filter list
-	filters.unshift(all);
-	//upload of the filter list in the localStorage
-	const filtersValue = JSON.stringify(filters);
-	window.localStorage.setItem("filters",filtersValue);
-}else{
-	filters = JSON.parse(filters);
-};
-// }
-
+let filters;
+let projects;
 const gallery = document.querySelector(".gallery");
 const filterContainer = document.createElement("div");
 filterContainer.classList.add("filters");
 gallery.parentElement.insertBefore(filterContainer,gallery);
+await dataFiltersLoading();
+await dataProjectsLoading();
+await creationFilter();
 creationCard(projects);
-creationFilter(filters);
-let selection=[all];
 buttonAllClicked(projects);
 buttonClicked(projects);
-
+login();
 let token = window.localStorage.getItem("token");
 if(token !== null){
-editionMode();
-functionLogout();
+	editionMode();
+	logout();
+}
+
+async function dataFiltersLoading(){
+	filters = window.localStorage.getItem("filters");
+	// Filter list creation from the categorie loading from the API, if not in the LocalStorage
+	if (filters === null){
+		try{
+			const answer = await fetch("http://localhost:5678/api/categories");
+			const categories = await answer.json();
+			//creation of the filter list from the API
+			filters = categories.map(function(a){
+				return a.name;
+			});
+			//add of the filter "all" in the filter list
+			filters.unshift(all);
+			//upload of the filter list in the localStorage
+			const filtersValue = JSON.stringify(filters);
+			window.localStorage.setItem("filters",filtersValue);
+		}
+		catch(error){
+			console.log(error);
+		}
+	}else{
+		filters = JSON.parse(filters);
+	};
+	return filters;
 }
 
 async function dataProjectsLoading(){
-//Project content loading from the API, if not in the LocalStorage
-if (projects === null){
-	const answer = await fetch("http://localhost:5678/api/works");
-	projects = await answer.json();
-	console.log(projects);
-	const projectsValue = JSON.stringify(projects);
-	window.localStorage.setItem("projects", projectsValue);
-}else{
-	projects = JSON.parse(projects);
-};
+	projects = window.localStorage.getItem("projects");
+	//Project content loading from the API, if not in the LocalStorage
+	if (projects === null){
+		try{
+		const answer = await fetch("http://localhost:5678/api/works");
+		projects = await answer.json();
+		console.log(projects);
+		const projectsValue = JSON.stringify(projects);
+		window.localStorage.setItem("projects", projectsValue);
+		}
+		catch(error){
+			console.log(error);
+		}
+	}else{
+		projects = JSON.parse(projects);
+	};
+	return projects;
 }
 
 //Function to Create all filter buttons on the HTML page (based on one list of category)
-function creationFilter(list){	
-	console.log(list);
+async function creationFilter(){
+	await dataFiltersLoading();
 	//creation of all the filters from the filter list
-	for(let i in list){
+	for(let i in filters){
 		const button = document.createElement("button");
-		button.innerText=list[i];
+		button.innerText=filters[i];
 		button.classList.add("button");
 		filterContainer.appendChild(button);
-		button.dataset.id=list[i];
+		button.dataset.id=filters[i];
 	}
 	const buttonAll = document.querySelector(".filters button");
 	buttonAll.classList.add("buttonAll");
@@ -77,7 +83,7 @@ function creationFilter(list){
 }
 
 //Function to Create all card project on the HTML page (based on one list of project) 
-export function creationCard(list){
+export async function creationCard(list){
 	for (let i in list){
 		const figure = document.createElement("figure");
 		gallery.appendChild(figure);
@@ -115,68 +121,22 @@ function editionMode(){
 	};
 
 	//transformation of the link login to logout
-	const loginLink = document.querySelector("a[href='./login.html']");
+	const loginLink = document.querySelector(".login");
 	loginLink.innerHTML="logout";
-	loginLink.classList.add("logout");
+	loginLink.classList.replace("login","logout");
 }
 
-function functionLogout(){
+function login(){
+	const btnLogin = document.querySelector(".login");
+	btnLogin.addEventListener("click",function(event){
+		document.location.href="./login.html";
+	});
+}
+
+function logout(){
     const logoutButton = document.querySelector(".logout");
     logoutButton.addEventListener("click",function(){
         localStorage.removeItem("token");
         document.location.href="./index.html";
     })
 }
-// function buttonAllClicked(projects){
-// 	const buttonAll=document.querySelector(".buttonAll");
-// 	buttonAll.addEventListener("click",function(){
-// 		if(selection[0]!==all){
-// 			// unselection of all the other filters when the "all" button is clicked
-// 			for(let i in selection){
-// 				const sel = document.querySelector(`button[data-id="${selection[i]}"]`);
-// 				sel.classList.toggle("selected");
-// 			}
-// 			selection=[all];
-// 			gallery.innerHTML="";
-// 			creationCard(projects);
-// 			buttonAll.classList.toggle("selected");
-// 		}
-// 		//nothing else if the "All" button is already selected
-// 	});
-// }
-
-// function buttonClicked(projects){
-// 	//Actions when all buttons (except "all") are clicked
-// 	const sortedButton = document.querySelectorAll(".button");
-// 	const buttonAll=document.querySelector(".buttonAll");
-// 	for (let i=1;i<sortedButton.length;i++){
-// 		sortedButton[i].addEventListener("click",function(event){
-// 			event.target.classList.toggle("selected");
-// 			//writting of the selection list (if the "all" button is on or not)
-// 			if(selection[0]===all){
-// 				selection=[];
-// 				selection.push(event.target.innerText);
-// 				buttonAll.classList.toggle("selected");
-// 			} else {
-// 				if(selection.includes(event.target.innerText)){
-// 					selection.splice(selection.indexOf(event.target.innerText),1);
-// 				} else {
-// 				selection.push(event.target.innerText);
-// 				}
-// 			}
-// 			//Reload of all the project which match the selection list (if the filters are all unselected or not)
-// 			if(selection.length===0){
-// 				buttonAll.classList.toggle("selected");
-// 				selection=[all];
-// 				gallery.innerHTML="";
-// 				creationCard(projects);
-// 			} else {
-// 				const sortedProjects = projects.filter(function(element){
-// 					return selection.includes(element.category.name);
-// 				});
-// 				gallery.innerHTML="";
-// 				creationCard(sortedProjects);
-// 			}
-// 		})
-// 	}
-// }
