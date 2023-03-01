@@ -5,14 +5,13 @@
     gap:10px;
     margin-block: 51px;
 }
-button{
+.button{
 	font-family: 'Syne';
 	color: #1D6154;
     padding:9px 28px;
     border: 1px solid #1D6154;
     border-radius: 60px;
     background-color: transparent;
-    cursor: pointer;
 }
 
 .selected{
@@ -47,9 +46,12 @@ button{
     margin-block:15px;
     position: absolute;
 }
-:is(.modifInfo-0, .modifInfo-1,.modifInfo-2) a{
+:is(.modifInfo-0, .modifInfo-1,.modifInfo-2) :is(a,i){
     color:black;
     text-decoration: none;
+}
+:is(.modifInfo-0, .modifInfo-1,.modifInfo-2) a:hover{
+    text-decoration: underline;
 }
 .modifInfo-0{
     bottom:-50px;

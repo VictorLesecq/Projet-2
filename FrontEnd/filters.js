@@ -22,7 +22,7 @@ function buttonAllEffect(projects){
 		}
 		selection=[all];
 		gallery.innerHTML="";
-		creationCard(projects);
+		creationCard(projects,1);
 		buttonAll.classList.toggle("selected");
 	}
 	//nothing else if the "All" button is already selected
@@ -59,12 +59,12 @@ function buttonEffect(event,projects){
 		buttonAll.classList.toggle("selected");
 		selection=[all];
 		gallery.innerHTML="";
-		creationCard(projects);
+		creationCard(projects,1);
 	} else {
 		const sortedProjects = projects.filter(function(element){
 			return selection.includes(element.category.name);
 		});
 		gallery.innerHTML="";
-		creationCard(sortedProjects);
+		creationCard(sortedProjects,1);
 	}
 }

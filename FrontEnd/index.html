@@ -9,9 +9,9 @@
 	<link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=Work+Sans&display=swap" rel="stylesheet">
 	<meta name="description" content="">
 	<link rel="stylesheet" href="./assets/style.css">
+	<link rel="stylesheet" href="./assets/style_modal.css">
 	<script src="https://kit.fontawesome.com/a524bcc808.js" crossorigin="anonymous"></script>
 	<script type="module" src="projets.js"></script>
-	
 	
 </head>
 <body>
@@ -21,7 +21,7 @@
 		<ul>
 			<li><a href="./index.html">projets</a></li>
 			<li>contact</li>
-			<li class="login">login</li>
+			<li><a class="login" href="./login.html">login</a></li>
 			<li><img src="./assets/icons/instagram.png" alt="Instagram"></li>
 		</ul>
 	</nav>
@@ -56,6 +56,18 @@
 			<input type="submit" value="Envoyer">
 		</form>
 	</section>
+	<aside id="modal2" class="modal" aria-hidden="true" role="dialog" aria-labelledby="titleModal" style="display:none;">
+		<div class="modal_wrapper js-stop-modal">
+			<button class="js-close-modal">
+				<span class="bf_bouton_icon"></span>
+			</button>	
+			<h3 id="titleModal">Galerie photo</h1>
+			<div class="gallery">
+			</div>
+			<button class="button addProject">Ajouter une photo</button>
+			<button class="suppGallery">Supprimer la galerie</button>
+		</div>
+	</aside>
 </main>
 
 <footer>
