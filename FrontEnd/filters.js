@@ -22,7 +22,7 @@ function buttonAllEffect(projects){
 		}
 		selection=[all];
 		gallery.innerHTML="";
-		creationCard(projects,1);
+		creationCard(projects,true);
 		buttonAll.classList.toggle("selected");
 	}
 	//nothing else if the "All" button is already selected
@@ -30,7 +30,7 @@ function buttonAllEffect(projects){
 
 export function buttonClicked(projects){
 	//Actions when all buttons (except "all") are clicked
-	const sortedButton = document.querySelectorAll(".button");
+	const sortedButton = document.querySelectorAll(".btn-filter");
 	for (let i=1;i<sortedButton.length;i++){
 		sortedButton[i].addEventListener("click",function(event){
 			buttonEffect(event,projects)
@@ -59,12 +59,12 @@ function buttonEffect(event,projects){
 		buttonAll.classList.toggle("selected");
 		selection=[all];
 		gallery.innerHTML="";
-		creationCard(projects,1);
+		creationCard(projects,true);
 	} else {
 		const sortedProjects = projects.filter(function(element){
 			return selection.includes(element.category.name);
 		});
 		gallery.innerHTML="";
-		creationCard(sortedProjects,1);
+		creationCard(sortedProjects,true);
 	}
 }

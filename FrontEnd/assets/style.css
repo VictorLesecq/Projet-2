@@ -3,7 +3,10 @@
    License: none (public domain)
 */
 @import  url("./style_js.css");
-
+@import  url("./style_small_icon.css");
+*{
+	box-sizing: border-box;
+}
 html, body, div, span, applet, object, iframe,
 h1, h2, h3, h4, h5, h6, p, blockquote, pre,
 a, abbr, acronym, address, big, cite, code,
@@ -23,7 +26,6 @@ time, mark, audio, video {
 	font-size: 100%;
 	font: inherit;
 	vertical-align: baseline;
-	box-sizing: border-box;
 }
 /* HTML5 display-role reset for older browsers */
 article, aside, details, figcaption, figure,
@@ -168,7 +170,7 @@ margin: auto;
 	flex-direction: column;
 }
 
-:is(#contact,#login) input {
+:is(#contact,#login) input:not(.button) {
 	height: 50px;
 	font-size: 1.2em;
 	border: none;
@@ -177,6 +179,7 @@ margin: auto;
 :is(#contact,#login) label {
 	margin: 2em 0 1em 0;
 }
+
 :is(#contact,#login) textarea {
 	border: none;
 	box-shadow: 0px 4px 14px rgba(0, 0, 0, 0.09);
@@ -194,13 +197,9 @@ main input[type="submit"]{
 	color: white;
 	background-color: #1D6154;
 	margin : 2em auto ;
-	/* width: 180px; */
-	padding: 0px 50px;
-	text-align: center;
-	border-radius: 60px ;
-	cursor: pointer;
+	height:36px;
 }
-button{
+button ,.cursor{
 	cursor: pointer;
 }
 footer{
@@ -211,5 +210,30 @@ footer nav ul {
 	justify-content: flex-end;
     padding:2em;
     margin:0px;
+}
+
+.btn{
+	cursor: pointer;
+	border-radius: 60px;
+    border: 1px solid #1D6154;
+	height:36px;
+	padding-inline: 25px;
+	font-family: 'Syne';
+	color: #1D6154;
+    background-color: transparent;
+}
+.selected{
+    background-color: #1D6154 ;
+    color:white;
+}
+.button{
+	cursor: pointer;
+	border-radius: 60px;
+	height:36px;
+	padding-inline: 50px;
+	border:none;
+	font-family: 'Syne';
+	color: #FFF;
+	background-color: #1D6154;
 }
 

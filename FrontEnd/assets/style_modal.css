@@ -13,12 +13,12 @@
 .modal_wrapper{
     background-color: #FFF;
     width:50%;
-    max-height: calc(100vh - 60px);
+    max-height: calc(100vh - 70px);
     display:flex;
     flex-direction: column;
     align-items: center;
-    padding:60px 5% 45px 5%;
-    overflow: auto;
+    padding:60px 80px 45px 80px;
+    /* overflow: auto; */
     position:relative;
 }
 
@@ -29,7 +29,6 @@ h3{
 
 .modal_wrapper button{
     margin:1.5em auto;
-    padding-block: 0.5em;
 }
 
 .modal_wrapper .suppGallery{
@@ -38,17 +37,18 @@ h3{
     color:#D65353;
     margin:0;
 }
-.addProject{
-    color: white;
-	background-color: #1D6154;
-}
 .modal_wrapper .gallery {
 	width: 100%;
 	display: grid;
 	grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
 	grid-column-gap: 20px;
 	grid-row-gap: 20px;
-    padding-bottom:20px;
+    overflow:auto;
+    padding-right:8px;
+}
+.thin-border-bottom{
+    width:100%;
+    padding-top:20px;
     border-bottom:1px solid #B3B3B3;
 }
 figcaption a{
@@ -66,31 +66,62 @@ figcaption a:hover{
     position:absolute;
     top:5px;
     right:5px;
-    padding:4px 5px;
+    padding:0px;
     margin:0;
 }
 
-.js-close-modal{
-	position:absolute;
-	right:20px;
-	top:20px;
-	padding:15px 5px;  
-    border: none;
-    background: transparent;
-    display: flex;
+.fa-trash-can{
+    padding:4px;
 }
 
-.bf_bouton_icon{
-	width:18px;
-	height:2px;
-    transform:rotate(45deg);
-    background-color:#000000;
+.fa-thin{
+    font-family: 'Font Awesome\ 5 Free';
+    font-weight: 900;
+    font-size:50px;
+    color: #B9C5CC;
 }
-.bf_bouton_icon::before{
-	content:'';
-	position:absolute;  
-	width:18px;
-	height:2px;  
-    background-color:#000000;
-    transform:translateX(-50%) rotate(90deg);
+.add-picture{
+    width:100%;
+    display:flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+}
+.add-picture label{
+    margin-top:30px;
+    margin-bottom:10px;
+}
+.add-picture-div{
+    padding-block: 20px;
+    background: #E8F1F7;
+    border-radius: 3px;
+}
+.add-picture-div p{
+    padding:7px;
+}
+#btn-add-picture{
+    display: none;
+}
+.btn-add-picture{
+    background: #CBD6DC;
+    padding-block: 10px;
+    margin: 20px 0 0 0 !important;
+    color:#306685;
+}
+.picture-config{
+    font-size: 10px;
+}
+#title-nw-project, #category-nw-project{
+    width:100%;
+    box-shadow: 0px 4px 14px 0px #00000017;
+    height: 50px;
+    padding:0;
+    border:none;
+    background-color: #FFF;
+}
+#title-nw-project, #category-nw-project{
+    padding-left:20px;
+}
+.label-nw-project{
+    align-self: flex-start;
 }

@@ -7,17 +7,43 @@ let gallery = document.querySelector(".gallery");
 const filterContainer = document.createElement("div");
 filterContainer.classList.add("filters");
 gallery.parentElement.insertBefore(filterContainer,gallery);
-await dataFiltersLoading();
+// await dataFiltersLoading();
 await dataProjectsLoading();
-await creationFilter();
-creationCard(projects,1);
+await filterDataUse();
+creationCard(projects,true);
 buttonAllClicked(projects);
 buttonClicked(projects);
-// login();
+
 let token = window.localStorage.getItem("token");
 if(token !== null){
 	editionMode();
 	logout();
+}
+
+let modal=null;
+openModalEventListener();
+
+
+async function filterDataUse(){
+	await creationFilter();
+	addFilterToForm();
+}
+
+//Function to Create all filter buttons on the HTML page (based on one list of category)
+async function creationFilter(){
+	await dataFiltersLoading();
+	//creation of all the filters from the filter list
+	for(let i in filters){
+		const button = document.createElement("button");
+		button.innerText=filters[i];
+		button.classList.add("btn");
+		button.classList.add("btn-filter");
+		filterContainer.appendChild(button);
+		button.dataset.id=filters[i];
+	}
+	const buttonAll = document.querySelector(".filters button");
+	buttonAll.classList.add("buttonAll");
+	buttonAll.classList.add("selected");
 }
 
 async function dataFiltersLoading(){
@@ -46,6 +72,21 @@ async function dataFiltersLoading(){
 	return filters;
 }
 
+function addFilterToForm(){
+	const form = document.querySelector("#modal3 form");
+	form.innerHTML+=`<label class='label-nw-project' for='category-nw-project'>Catégorie</label>
+					<select id='category-nw-project' name='category-nw-project'>
+						<option>-------------</option>
+					</select>
+					`;
+	const dropDownList = form.querySelector("select");
+	for(let i=1;i<filters.length;i++){
+		dropDownList.innerHTML+=`<option value="${filters[i]}">${filters[i]}</option>`;
+	};
+	form.innerHTML+=`<div class='thin-border-bottom'></div>
+					<button class="button add-picture-button">Valider</button>`;
+}
+
 async function dataProjectsLoading(){
 	projects = window.localStorage.getItem("projects");
 	//Project content loading from the API, if not in the LocalStorage
@@ -66,33 +107,19 @@ async function dataProjectsLoading(){
 	return projects;
 }
 
-//Function to Create all filter buttons on the HTML page (based on one list of category)
-async function creationFilter(){
-	await dataFiltersLoading();
-	//creation of all the filters from the filter list
-	for(let i in filters){
-		const button = document.createElement("button");
-		button.innerText=filters[i];
-		button.classList.add("button");
-		filterContainer.appendChild(button);
-		button.dataset.id=filters[i];
-	}
-	const buttonAll = document.querySelector(".filters button");
-	buttonAll.classList.add("buttonAll");
-	buttonAll.classList.add("selected");
-}
 
 //Function to Create all card project on the HTML page (based on one list of project) 
-export async function creationCard(list,boolean){
+export async function creationCard(list,isNotModal){
 	for (let i in list){
 		const figure = document.createElement("figure");
+		figure.dataset.idProject=list[i].id;
 		gallery.appendChild(figure);
 		const imageElement = document.createElement("img");
 		imageElement.src = list[i].imageUrl;
 		imageElement.alt = list[i].title;
 		figure.appendChild(imageElement);
 		const figCaption = document.createElement("figcaption");
-		if(boolean){
+		if(isNotModal){
 			figCaption.innerText = list[i].title;
 		}else{
 			figCaption.innerHTML = "<a href='#'>éditer</a>"
@@ -110,7 +137,8 @@ function editionMode(){
 	const html = document.querySelector("html");
 	const tape = document.createElement("div");
 	tape.classList.add("editionModeTape");
-	tape.innerHTML="<p><i class='fa-regular fa-pen-to-square'></i>Mode Edition</p><input type='submit' id='changeValidation' value='publier les changements'>";
+	tape.innerHTML=`<p><i class='fa-regular fa-pen-to-square'></i>Mode Edition</p>
+					<input type='submit' class="btn" id='changeValidation' value='publier les changements'>`;
 	html.insertBefore(tape,html.firstChild.nextSibling);
 
 	//Add of all the link to modify the element
@@ -122,7 +150,10 @@ function editionMode(){
 	const thirdPLaceContainer = portfolio.firstElementChild;
 	let modifTopicContainer = [firstPlaceContainer,secondPlaceContainer,thirdPLaceContainer];
 	for (let i in modifTopicContainer){
-		modifInfo.innerHTML=`<p><i class='fa-regular fa-pen-to-square'></i><a href='#modal${i}' class='js-modal'>modifier</a></p>`;
+		modifInfo.innerHTML=`<p>
+								<i class='fa-regular fa-pen-to-square'></i>
+								<a href='#modal${i}' class='js-modal' data-link-reference='#modal${i}'>modifier</a>
+							</p>`;
 		let elem = modifInfo.cloneNode(true);
 		elem.classList.add(`modifInfo-${i}`);
 		modifTopicContainer[i].insertBefore(elem,modifTopicContainer[i].firstElementChild);
@@ -134,13 +165,6 @@ function editionMode(){
 	loginLink.classList.replace("login","logout");
 }
 
-// function login(){
-// 	const btnLogin = document.querySelector("a[href='./login.html']");
-// 	btnLogin.addEventListener("click",function(event){
-// 		document.location.href="./login.html";
-// 	});
-// }
-
 function logout(){
     const btnLogout = document.querySelector(".logout");
     btnLogout.addEventListener("click",function(e){
@@ -150,26 +174,29 @@ function logout(){
     })
 }
 
-
-let modal=null;
-modificationProject();
-
-function modificationProject(){
-	const btnModal= document.querySelectorAll(".js-modal");
-	btnModal.forEach(a=> {a.addEventListener("click",openModal);
+function openModalEventListener(){
+	const btnModifProject= document.querySelectorAll(".js-modal");
+	btnModifProject.forEach(a=> {a.addEventListener("click",function(event){
+		closeModal(event);
+		openModal(event);
+	});
 })};
+
 
 function openModal(event){
 	event.preventDefault();
 	try{
-		const target=document.querySelector(event.target.getAttribute("href"));
-		target.style.display=null;
-		target.removeAttribute("aria-hidden");
-		target.setAttribute("aria-modal","true");
-		gallery=document.querySelector(".modal .gallery");
-		creationCard(projects,0);
-		gallery=document.querySelector(".gallery");
+		const target=document.querySelector(event.target.dataset.linkReference);
 		modal=target;
+		modal.style.display=null;
+		modal.removeAttribute("aria-hidden");
+		modal.setAttribute("aria-modal","true");
+		if(modal.querySelector(".gallery")){
+			gallery=document.querySelector(".modal .gallery");
+			creationCard(projects,false);
+			gallery=document.querySelector(".gallery");
+			document.querySelectorAll(".trashcan").forEach(a=> {a.addEventListener("click", deleteProject)});
+		};
 		modal.addEventListener("click",closeModal);
 		modal.querySelector(".js-close-modal").addEventListener("click",closeModal);
 		modal.querySelector(".js-stop-modal").addEventListener("click",stopPropagation);
@@ -188,6 +215,7 @@ function closeModal(event){
 	// to delete the gallery content only on the modal which contain projects
 	if(document.querySelector(".modal .gallery")){
 		document.querySelector(".modal .gallery").innerHTML="";
+		document.querySelectorAll(".trashcan").forEach(a=> {a.removeEventListener("click", deleteProject)});
 	}
 	gallery=document.querySelector(".gallery");
 	modal.removeEventListener("click",closeModal);
@@ -201,4 +229,7 @@ function stopPropagation(event){
 }
 
 
-
+function deleteProject(event){
+	const idProject = event.target.parentElement.parentElement.getAttribute("data-id-project");
+	console.log(idProject);
+}

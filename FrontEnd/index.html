@@ -53,19 +53,41 @@
 			<input type="email" name="email" id="email">
 			<label for="message">Message</label>
 			<textarea name="message" id="message" cols="30" rows="10"></textarea>
-			<input type="submit" value="Envoyer">
+			<input class="button" type="submit" value="Envoyer">
 		</form>
 	</section>
 	<aside id="modal2" class="modal" aria-hidden="true" role="dialog" aria-labelledby="titleModal" style="display:none;">
 		<div class="modal_wrapper js-stop-modal">
 			<button class="js-close-modal">
-				<span class="bf_bouton_icon"></span>
+				<span class="btn_close_icon"></span>
 			</button>	
-			<h3 id="titleModal">Galerie photo</h1>
+			<h3 id="titleModal">Galerie photo</h3>
 			<div class="gallery">
 			</div>
-			<button class="button addProject">Ajouter une photo</button>
+			<div class="thin-border-bottom"></div>
+			<button class="button js-modal js-btn-link" data-link-reference="#modal3">Ajouter une photo</button>
 			<button class="suppGallery">Supprimer la galerie</button>
+		</div>
+	</aside>
+	<aside id="modal3" class="modal" aria-hidden="true" role="dialog" aria-labelledby="titleModal" style="display:none;">
+		<div class="modal_wrapper js-stop-modal">
+			<button class="js-back-modal">
+				<span class="btn_back_icon js-modal" data-link-reference="#modal2"></span>
+			</button>
+			<button class="js-close-modal">
+				<span class="btn_close_icon"></span>
+			</button>	
+			<h3 id="titleModal">Ajout photo</h3>
+			<form class="add-picture">
+				<div class="add-picture add-picture-div">
+					<i class="fa-thin fa-image"></i>
+					<label class="button btn-add-picture" for="btn-add-picture">+ Ajouter photo</label>
+					<input type="file" id="btn-add-picture" name="btn-add-picture" accept="image/png, image/jpeg">
+					<p class="picture-config">jpg, png : 4mo max</p>
+				</div>
+				<label class="label-nw-project" for="title">Titre</label>
+				<input type="text" name="title-nw-project" id="title-nw-project">
+			</form>
 		</div>
 	</aside>
 </main>

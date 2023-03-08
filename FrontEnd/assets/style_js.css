@@ -5,19 +5,6 @@
     gap:10px;
     margin-block: 51px;
 }
-.button{
-	font-family: 'Syne';
-	color: #1D6154;
-    padding:9px 28px;
-    border: 1px solid #1D6154;
-    border-radius: 60px;
-    background-color: transparent;
-}
-
-.selected{
-    background-color: #1D6154 ;
-    color:white;
-}
 
 .editionModeTape{
     height:60px;
@@ -36,11 +23,10 @@
     margin-right:10px;
 }
 #changeValidation{
-    padding:11px 23px;
-    text-align: center;
-	border-radius: 60px ;
-	cursor: pointer;
     font-family: Work Sans;
+    border:none;
+    background-color: #FFF ;
+    color:#000;
 }
 .modifInfo-0, .modifInfo-1,.modifInfo-2{
     margin-block:15px;
