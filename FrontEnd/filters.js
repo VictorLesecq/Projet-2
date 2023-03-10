@@ -4,14 +4,15 @@ import { creationCard } from "./projets.js";
 const all ="Tous";
 let selection=[all];
 
-export function buttonAllClicked(projects){
+export function buttonAllClicked(){
 	const buttonAll=document.querySelector(".buttonAll");
 	buttonAll.addEventListener("click",function(){
-		buttonAllEffect(projects)
+		buttonAllEffect()
 	});
 };
 
-function buttonAllEffect(projects){	
+function buttonAllEffect(){		
+	let proj = JSON.parse(window.localStorage.getItem("projects"));
 	const buttonAll=document.querySelector(".buttonAll");
 	const gallery = document.querySelector(".gallery");
 	if(selection[0]!==all){
@@ -22,23 +23,24 @@ function buttonAllEffect(projects){
 		}
 		selection=[all];
 		gallery.innerHTML="";
-		creationCard(projects,true);
+		creationCard(proj,true);
 		buttonAll.classList.toggle("selected");
 	}
 	//nothing else if the "All" button is already selected
 }
 
-export function buttonClicked(projects){
+export function buttonClicked(){
 	//Actions when all buttons (except "all") are clicked
 	const sortedButton = document.querySelectorAll(".btn-filter");
 	for (let i=1;i<sortedButton.length;i++){
 		sortedButton[i].addEventListener("click",function(event){
-			buttonEffect(event,projects)
+			buttonEffect(event)
 		})
 	}
 }
 
-function buttonEffect(event,projects){	
+function buttonEffect(event){	
+	let proj = JSON.parse(window.localStorage.getItem("projects"));
 	const buttonAll=document.querySelector(".buttonAll");
 	const gallery = document.querySelector(".gallery");
 	event.target.classList.toggle("selected");
@@ -51,7 +53,7 @@ function buttonEffect(event,projects){
 		if(selection.includes(event.target.innerText)){
 			selection.splice(selection.indexOf(event.target.innerText),1);
 		} else {
-		selection.push(event.target.innerText);
+			selection.push(event.target.innerText);
 		}
 	}
 	//Reload of all the project which match the selection list (if the filters are all unselected or not)
@@ -59,12 +61,23 @@ function buttonEffect(event,projects){
 		buttonAll.classList.toggle("selected");
 		selection=[all];
 		gallery.innerHTML="";
-		creationCard(projects,true);
+		creationCard(proj,true);
 	} else {
-		const sortedProjects = projects.filter(function(element){
-			return selection.includes(element.category.name);
-		});
-		gallery.innerHTML="";
+		displaySelection();
+	}
+}
+
+export function displaySelection(){
+	let proj = JSON.parse(window.localStorage.getItem("projects"));
+	const gallery = document.querySelector(".gallery");
+	const sortedProjects = proj.filter(function(element){
+		return selection.includes(element.category.name);
+	});
+	gallery.innerHTML="";
+	if(selection[0]===all){
+		creationCard(proj,true)
+	}else{
 		creationCard(sortedProjects,true);
 	}
+
 }

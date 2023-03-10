@@ -1,4 +1,4 @@
-import {buttonAllClicked,buttonClicked} from "./filters.js";
+import {buttonAllClicked,buttonClicked,displaySelection} from "./filters.js";
 
 const all="Tous";
 let filters;
@@ -9,10 +9,12 @@ filterContainer.classList.add("filters");
 gallery.parentElement.insertBefore(filterContainer,gallery);
 // await dataFiltersLoading();
 await dataProjectsLoading();
+
+
 await filterDataUse();
 creationCard(projects,true);
-buttonAllClicked(projects);
-buttonClicked(projects);
+buttonAllClicked();
+buttonClicked();
 
 let token = window.localStorage.getItem("token");
 if(token !== null){
@@ -94,7 +96,6 @@ async function dataProjectsLoading(){
 		try{
 		const answer = await fetch("http://localhost:5678/api/works");
 		projects = await answer.json();
-		console.log(projects);
 		const projectsValue = JSON.stringify(projects);
 		window.localStorage.setItem("projects", projectsValue);
 		}
@@ -195,7 +196,24 @@ function openModal(event){
 			gallery=document.querySelector(".modal .gallery");
 			creationCard(projects,false);
 			gallery=document.querySelector(".gallery");
-			document.querySelectorAll(".trashcan").forEach(a=> {a.addEventListener("click", deleteProject)});
+			document.querySelectorAll(".trashcan").forEach(a=> {a.addEventListener("click", async function(e){
+				let deletedProj=e.target;
+				await deleteProject(deletedProj);
+				localStorage.removeItem("projects");
+				projects = await dataProjectsLoading();
+				closeModal(event);
+				displaySelection();
+			})});
+			// document.querySelector(".suppGallery").addEventListener("click",async function(){
+			// 	let listDeletedProject=document.querySelectorAll(".trashcan");
+			// 	for (let i in listDeletedProject){
+			// 		await deleteProject(listDeletedProject[i])
+			// 	};
+			// 	localStorage.removeItem("projects");
+			// 	projects = await dataProjectsLoading();
+			// 	closeModal(event);
+			// 	displaySelection();
+			// });
 		};
 		modal.addEventListener("click",closeModal);
 		modal.querySelector(".js-close-modal").addEventListener("click",closeModal);
@@ -215,7 +233,24 @@ function closeModal(event){
 	// to delete the gallery content only on the modal which contain projects
 	if(document.querySelector(".modal .gallery")){
 		document.querySelector(".modal .gallery").innerHTML="";
-		document.querySelectorAll(".trashcan").forEach(a=> {a.removeEventListener("click", deleteProject)});
+		document.querySelectorAll(".trashcan").forEach(a=> {a.removeEventListener("click",async function(e){
+			let deletedProj=e.target;
+			await deleteProject(deletedProj);
+			localStorage.removeItem("projects");
+			projects = await dataProjectsLoading();
+			closeModal(event);
+			displaySelection();
+		})});
+		// document.querySelector(".suppGallery").addEventListener("click",async function(){
+		// 	let listDeletedProject=document.querySelectorAll(".trashcan");
+		// 	for (let i in listDeletedProject){
+		// 		await deleteProject(listDeletedProject[i])
+		// 	};
+		// 	localStorage.removeItem("projects");
+		// 	projects = await dataProjectsLoading();
+		// 	closeModal(event);
+		// 	displaySelection();
+		// });
 	}
 	gallery=document.querySelector(".gallery");
 	modal.removeEventListener("click",closeModal);
@@ -229,7 +264,28 @@ function stopPropagation(event){
 }
 
 
-function deleteProject(event){
-	const idProject = event.target.parentElement.parentElement.getAttribute("data-id-project");
-	console.log(idProject);
+async function deleteProject(deletedElement){
+	// event.preventDefault();
+	const idProject = deletedElement.parentElement.parentElement.getAttribute("data-id-project");
+	let tokenKey=JSON.parse(window.localStorage.getItem("token"));
+	//mettre en sécurité
+	try{
+		deletedElement.parentElement.parentElement.remove();
+		let response= await fetch('http://localhost:5678/api/works/' + idProject, {
+			method: 'DELETE',
+			headers: {
+				Authorization: `Bearer ${tokenKey}`
+			},
+		})
+		if (response.ok){
+			alert("Le projet a été supprimé avec succès !");
+		}else{
+			alert("une erreur est survenue lors de la suppression du projet.");
+		}
+	}
+	catch(error){
+		console.log(response);
+		alert(error.message);
+		// throw(error)
+	}
 }
