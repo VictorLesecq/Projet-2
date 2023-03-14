@@ -7,10 +7,7 @@ let gallery = document.querySelector(".gallery");
 const filterContainer = document.createElement("div");
 filterContainer.classList.add("filters");
 gallery.parentElement.insertBefore(filterContainer,gallery);
-// await dataFiltersLoading();
 await dataProjectsLoading();
-
-
 await filterDataUse();
 creationCard(projects,true);
 buttonAllClicked();
@@ -78,7 +75,7 @@ function addFilterToForm(){
 	const form = document.querySelector("#modal3 form");
 	form.innerHTML+=`<label class='label-nw-project' for='category-nw-project'>Catégorie</label>
 					<select id='category-nw-project' name='category-nw-project'>
-						<option>-------------</option>
+						<option hidden disabled selected value> -- sélectionner une catégorie -- </option>
 					</select>
 					`;
 	const dropDownList = form.querySelector("select");
@@ -196,24 +193,7 @@ function openModal(event){
 			gallery=document.querySelector(".modal .gallery");
 			creationCard(projects,false);
 			gallery=document.querySelector(".gallery");
-			document.querySelectorAll(".trashcan").forEach(a=> {a.addEventListener("click", async function(e){
-				let deletedProj=e.target;
-				await deleteProject(deletedProj);
-				localStorage.removeItem("projects");
-				projects = await dataProjectsLoading();
-				closeModal(event);
-				displaySelection();
-			})});
-			// document.querySelector(".suppGallery").addEventListener("click",async function(){
-			// 	let listDeletedProject=document.querySelectorAll(".trashcan");
-			// 	for (let i in listDeletedProject){
-			// 		await deleteProject(listDeletedProject[i])
-			// 	};
-			// 	localStorage.removeItem("projects");
-			// 	projects = await dataProjectsLoading();
-			// 	closeModal(event);
-			// 	displaySelection();
-			// });
+			eventListenerDeleteProject();
 		};
 		modal.addEventListener("click",closeModal);
 		modal.querySelector(".js-close-modal").addEventListener("click",closeModal);
@@ -224,33 +204,15 @@ function openModal(event){
 	}
 }
 
-function closeModal(event){
+function closeModal(){
 	if(modal===null) return;
-	event.preventDefault();
 	modal.style.display="none";
 	modal.setAttribute("aria-hidden","true");
 	modal.removeAttribute("aria-modal");
 	// to delete the gallery content only on the modal which contain projects
 	if(document.querySelector(".modal .gallery")){
 		document.querySelector(".modal .gallery").innerHTML="";
-		document.querySelectorAll(".trashcan").forEach(a=> {a.removeEventListener("click",async function(e){
-			let deletedProj=e.target;
-			await deleteProject(deletedProj);
-			localStorage.removeItem("projects");
-			projects = await dataProjectsLoading();
-			closeModal(event);
-			displaySelection();
-		})});
-		// document.querySelector(".suppGallery").addEventListener("click",async function(){
-		// 	let listDeletedProject=document.querySelectorAll(".trashcan");
-		// 	for (let i in listDeletedProject){
-		// 		await deleteProject(listDeletedProject[i])
-		// 	};
-		// 	localStorage.removeItem("projects");
-		// 	projects = await dataProjectsLoading();
-		// 	closeModal(event);
-		// 	displaySelection();
-		// });
+		removeEventListenerDeleteProject();
 	}
 	gallery=document.querySelector(".gallery");
 	modal.removeEventListener("click",closeModal);
@@ -264,28 +226,107 @@ function stopPropagation(event){
 }
 
 
-async function deleteProject(deletedElement){
-	// event.preventDefault();
-	const idProject = deletedElement.parentElement.parentElement.getAttribute("data-id-project");
-	let tokenKey=JSON.parse(window.localStorage.getItem("token"));
-	//mettre en sécurité
-	try{
-		deletedElement.parentElement.parentElement.remove();
-		let response= await fetch('http://localhost:5678/api/works/' + idProject, {
-			method: 'DELETE',
-			headers: {
-				Authorization: `Bearer ${tokenKey}`
-			},
-		})
-		if (response.ok){
-			alert("Le projet a été supprimé avec succès !");
+function eventListenerDeleteProject(){
+	document.querySelectorAll(".trashcan").forEach(a=> {a.addEventListener("click", async function(e){
+		let idDeletedProj=e.target.parentElement.parentElement.getAttribute("data-id-project");;
+		if(await deleteProjectOnBDD(idDeletedProj)){
+			deleteProjectOnModal(idDeletedProj);
+			alert("Le projet a été supprimé avec succès !")
+			closeModal();
+			displaySelection();
 		}else{
 			alert("une erreur est survenue lors de la suppression du projet.");
 		}
+	})});
+	document.querySelector(".suppGallery").addEventListener("click",async function(){
+		// let listIdProject=document.querySelectorAll(".trashcan").map( a=> a.parentElement.getAttribute("data-id-project"));
+		let listIdProject=[];
+		let count=0;
+		document.querySelectorAll(".trashcan").forEach(a=>listIdProject.push(a.parentElement.getAttribute("data-id-project")))
+		listIdProject.forEach(async function(a){
+			if(deleteProjectOnBDD(a)){
+				deleteProjectOnModal(a);
+				count+=1;
+			}
+		})
+		if(count===listIdProject.length){
+			alert("Tous les projets ont été supprimés avec succès !")
+		}else{
+			alert("Tous les projects n'ont pas pu être supprimés correctement")
+		}
+		closeModal();
+		displaySelection();
+	});
+}
+
+function removeEventListenerDeleteProject(){
+	document.querySelectorAll(".trashcan").forEach(a=> {a.removeEventListener("click", async function(e){
+		let idDeletedProj=e.target.parentElement.parentElement.getAttribute("data-id-project");;
+		if(await deleteProjectOnBDD(idDeletedProj)){
+			deleteProjectOnModal(idDeletedProj);
+			alert("Le projet a été supprimé avec succès !")
+			closeModal();
+			displaySelection();
+		}
+	})});
+	document.querySelector(".suppGallery").removeEventListener("click",async function(){
+		// let listIdProject=document.querySelectorAll(".trashcan").map( a=> a.parentElement.getAttribute("data-id-project"));
+		let listIdProject=[];
+		let count=0;
+		document.querySelectorAll(".trashcan").forEach(a=>listIdProject.push(a.parentElement.getAttribute("data-id-project")))
+		listIdProject.forEach(async function(a){
+			if(deleteProjectOnBDD(a)){
+				deleteProjectOnModal(a);
+				count+=1;
+			}
+		})
+		if(count===listIdProject.length){
+			alert("Tous les projets ont été supprimés avec succès !")
+			// alert("flute");
+		}else{
+			alert("Tous les projects n'ont pas pu être supprimés correctement")
+		}
+		closeModal();
+		displaySelection();
+	});
+}
+
+function deleteProjectOnModal(idDeletedElement){
+	document.querySelector(`#modal2 figure[data-id-project='${idDeletedElement}']`).remove();
+	let indexDeletedProject=projects.findIndex(elem=>elem.id == idDeletedElement);
+	projects.splice(indexDeletedProject,1);
+	const projectsValue = JSON.stringify(projects);
+	window.localStorage.setItem("projects", projectsValue);
+}
+
+async function deleteProjectOnBDD(idDeletedElement){
+	let tokenKey=getToken();
+	if (tokenKey!==null){
+		try{
+			let response= await fetch('http://localhost:5678/api/works/' + idDeletedElement, {
+				method: 'DELETE',
+				headers: {
+					Authorization: `Bearer ${tokenKey}`
+				},
+			})
+			if (response.ok){
+				return(response.ok);
+			}else{
+				return(response.ok);
+			}
+		}
+		catch(error){
+			console.log(response);
+			alert(error.message);
+			// throw(error)
+		}
+	}else{
+		alert("Une erreur s'est produite, veillez-vous reconnecter");
+        document.location.href="./login.html";
 	}
-	catch(error){
-		console.log(response);
-		alert(error.message);
-		// throw(error)
-	}
+}
+
+function getToken(){
+	let tokenKey=JSON.parse(window.localStorage.getItem("token"));
+	return tokenKey;
 }
