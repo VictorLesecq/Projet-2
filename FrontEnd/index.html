@@ -19,8 +19,8 @@
 	<h1>Sophie Bluel <span>Architecte d'intérieur</span></h1>
 	<nav>
 		<ul>
-			<li><a href="./index.html">projets</a></li>
-			<li>contact</li>
+			<li><a href="#portfolio">projets</a></li>
+			<li><a href="#contact">contact</a></li>
 			<li><a class="login" href="./login.html">login</a></li>
 			<li><img src="./assets/icons/instagram.png" alt="Instagram"></li>
 		</ul>
@@ -66,7 +66,7 @@
 			</div>
 			<div class="thin-border-bottom"></div>
 			<button class="button js-modal js-btn-link" data-link-reference="#modal3">Ajouter une photo</button>
-			<button class="suppGallery">Supprimer la galerie</button>
+			<button class="button suppGallery">Supprimer la galerie</button>
 		</div>
 	</aside>
 	<aside id="modal3" class="modal" aria-hidden="true" role="dialog" aria-labelledby="titleModal" style="display:none;">
@@ -80,9 +80,14 @@
 			<h3 id="titleModal">Ajout photo</h3>
 			<form class="add-picture">
 				<div class="add-picture add-picture-div">
-					<i class="fa-thin fa-image"></i>
-					<label class="button btn-add-picture" for="btn-add-picture">+ Ajouter photo</label>
-					<input type="file" id="btn-add-picture" name="btn-add-picture" accept="image/png, image/jpeg">
+					<div id="input" class="add-picture">
+						<i class="fa-thin fa-image"></i>
+						<label class="button btn-add-picture" for="btn-add-picture">+ Ajouter photo</label>
+						<input type="file" id="btn-add-picture" name="btn-add-picture" accept="image/png, image/jpeg" onchange="loadFile(event)">
+					</div>
+
+					<img id="output" style="display:none" src="">
+					
 					<p class="picture-config">jpg, png : 4mo max</p>
 				</div>
 				<label class="label-nw-project" for="title">Titre</label>
@@ -102,3 +107,15 @@
 
 </body>
 </html>
+<script>
+function loadFile(event){
+	output=document.getElementById("output");
+	output.style.display=null;
+	input=document.getElementById("input");
+	input.style.display="none";
+	output.src=URL.createObjectURL(event.target.files[0]);
+	output.onload =function(){
+		URL.revokeObjectURL(output.src);
+	}
+}
+</script>

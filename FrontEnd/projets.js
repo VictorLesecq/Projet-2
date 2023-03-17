@@ -52,6 +52,7 @@ async function dataFiltersLoading(){
 		try{
 			const answer = await fetch("http://localhost:5678/api/categories");
 			const categories = await answer.json();
+			console.log(categories);
 			//creation of the filter list from the API
 			filters = categories.map(function(a){
 				return a.name;
@@ -183,9 +184,11 @@ function openModalEventListener(){
 
 function openModal(event){
 	event.preventDefault();
+	console.log("j'ouvre une modale");
 	try{
 		const target=document.querySelector(event.target.dataset.linkReference);
 		modal=target;
+			console.log(modal);
 		modal.style.display=null;
 		modal.removeAttribute("aria-hidden");
 		modal.setAttribute("aria-modal","true");
@@ -193,7 +196,11 @@ function openModal(event){
 			gallery=document.querySelector(".modal .gallery");
 			creationCard(projects,false);
 			gallery=document.querySelector(".gallery");
+			console.log('je lance un eventlistener pour delete');
 			eventListenerDeleteProject();
+		}else{
+			console.log('je lance un eventlistener pour ajouter');
+			eventListenerAddProject();
 		};
 		modal.addEventListener("click",closeModal);
 		modal.querySelector(".js-close-modal").addEventListener("click",closeModal);
@@ -205,20 +212,31 @@ function openModal(event){
 }
 
 function closeModal(){
-	if(modal===null) return;
-	modal.style.display="none";
-	modal.setAttribute("aria-hidden","true");
-	modal.removeAttribute("aria-modal");
-	// to delete the gallery content only on the modal which contain projects
-	if(document.querySelector(".modal .gallery")){
-		document.querySelector(".modal .gallery").innerHTML="";
-		removeEventListenerDeleteProject();
+
+	if(modal===null) {
+		return;
+	}else{
+		console.log("je ferme une modale");
+		modal.style.display="none";
+		modal.setAttribute("aria-hidden","true");
+		modal.removeAttribute("aria-modal");
+		// to delete the gallery content only on the modal which contain projects
+		if(modal.querySelector(".gallery")){
+			console.log(modal);
+			modal.querySelector(".gallery").innerHTML="";
+			console.log("je supprimer un eventlistener pour delete");
+			removeEventListenerDeleteProject();
+		}else{
+			console.log(modal);
+			console.log("je supprimer un eventlistener pour ajouter");
+			removeEventListenerAddProject();
+		}
+		gallery=document.querySelector(".gallery");
+		modal.removeEventListener("click",closeModal);
+		modal.querySelector(".js-close-modal").removeEventListener("click",closeModal);
+		modal.querySelector(".js-stop-modal").removeEventListener("click",stopPropagation);
+		modal=null;
 	}
-	gallery=document.querySelector(".gallery");
-	modal.removeEventListener("click",closeModal);
-	modal.querySelector(".js-close-modal").removeEventListener("click",closeModal);
-	modal.querySelector(".js-stop-modal").removeEventListener("click",stopPropagation);
-	modal=null;
 }
 
 function stopPropagation(event){
@@ -232,7 +250,7 @@ function eventListenerDeleteProject(){
 		if(await deleteProjectOnBDD(idDeletedProj)){
 			deleteProjectOnModal(idDeletedProj);
 			alert("Le projet a été supprimé avec succès !")
-			closeModal();
+			// closeModal();
 			displaySelection();
 		}else{
 			alert("une erreur est survenue lors de la suppression du projet.");
@@ -260,36 +278,9 @@ function eventListenerDeleteProject(){
 }
 
 function removeEventListenerDeleteProject(){
-	document.querySelectorAll(".trashcan").forEach(a=> {a.removeEventListener("click", async function(e){
-		let idDeletedProj=e.target.parentElement.parentElement.getAttribute("data-id-project");;
-		if(await deleteProjectOnBDD(idDeletedProj)){
-			deleteProjectOnModal(idDeletedProj);
-			alert("Le projet a été supprimé avec succès !")
-			closeModal();
-			displaySelection();
-		}
-	})});
-	document.querySelector(".suppGallery").removeEventListener("click",async function(){
-		// let listIdProject=document.querySelectorAll(".trashcan").map( a=> a.parentElement.getAttribute("data-id-project"));
-		let listIdProject=[];
-		let count=0;
-		document.querySelectorAll(".trashcan").forEach(a=>listIdProject.push(a.parentElement.getAttribute("data-id-project")))
-		listIdProject.forEach(async function(a){
-			if(deleteProjectOnBDD(a)){
-				deleteProjectOnModal(a);
-				count+=1;
-			}
-		})
-		if(count===listIdProject.length){
-			alert("Tous les projets ont été supprimés avec succès !")
-			// alert("flute");
-		}else{
-			alert("Tous les projects n'ont pas pu être supprimés correctement")
-		}
-		closeModal();
-		displaySelection();
-	});
+	document.querySelectorAll(".trashcan").forEach(a=> {a.removeEventListener("click")})
 }
+
 
 function deleteProjectOnModal(idDeletedElement){
 	document.querySelector(`#modal2 figure[data-id-project='${idDeletedElement}']`).remove();
@@ -329,4 +320,81 @@ async function deleteProjectOnBDD(idDeletedElement){
 function getToken(){
 	let tokenKey=JSON.parse(window.localStorage.getItem("token"));
 	return tokenKey;
+}
+
+
+function eventListenerAddProject(){
+	const form = modal.querySelector("form");
+	console.log(form);
+	form.addEventListener("submit", function(e){eventListenerAddProjectEffect(e)});
+}
+
+async function eventListenerAddProjectEffect(e){
+		e.preventDefault();
+		const form = modal.querySelector("form");
+
+		let inputTitle = document.querySelector("#title-nw-project").value.trim();
+		let inputCategory = document.querySelector("#category-nw-project").value;
+		let inputIdCategory = filters.findIndex(elem => elem===inputCategory);
+		// console.log(inputIdCategory);
+		let inputPicture = document.querySelector("#btn-add-picture").files[0];
+
+		if(inputTitle && inputIdCategory && inputPicture){
+			if(await postNewProjectOnBdd(inputTitle,inputIdCategory,inputPicture)){
+				alert("Le projet a été ajouté avec succès !")
+				/*form reset*/
+				const img =form.querySelector("#output");
+				img.style.display="none";
+				img.src=null;
+				document.querySelector("#title-nw-project").value=null;
+				document.querySelector("#category-nw-project").value=null;
+				const input=form.querySelector("#input");
+				input.style.display=null;
+				// closeModal();
+				// ou alors je push mon nouveau projet dans ma liste mais je n'ai pas toutes les infos
+				localStorage.removeItem("projects");
+				await dataProjectsLoading();
+				closeModal();
+				displaySelection();
+			}else{
+				alert("Une erreur s'est produite, veillez verifier et réessayer")
+			}
+			
+		}else{
+			alert("Le formulaire n'est pas complet, veuillez réessayer");
+		}
+}
+
+function removeEventListenerAddProject(){
+	const form = modal.querySelector("form");
+	console.log(form);
+	form.removeEventListener("submit",function(e){eventListenerAddProjectEffect(e)});
+	console.log("listener ajout supp");
+}
+
+async function postNewProjectOnBdd(title,idCategory,picture){
+	try{
+		var formData = new FormData();
+		formData.append("title",title);
+		formData.append("category",idCategory);
+		formData.append("image",picture);
+		let tokenKey=getToken();
+		console.log(formData);
+		let response = await fetch('http://localhost:5678/api/works/', {
+			method: 'POST',
+			headers: {
+				Authorization: `Bearer ${tokenKey}`
+			},
+			body : formData
+		})
+		if(response.ok){
+			return(response.ok);
+		}else{
+			return(response.ok);
+		};
+	}
+	catch(error){
+		console.log(response);
+		alert(error.message);
+	}
 }

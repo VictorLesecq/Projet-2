@@ -30,13 +30,18 @@
 .btn_close_icon::after{
     transform: translateX(-50%) rotate(-45deg);
 }
-  
+ .btn_back_icon,.btn_close_icon{
+    border:solid 1px transparent; 
+    border-radius:0%;
+    transition: all 0.5s ease-in-out;
+ } 
+
 :is(.btn_back_icon,.btn_close_icon):hover{
-    animation:borderAni 5s cubic-bezier(0, 0.6, 1, 0.4);
-    border:solid 1px black; 
     border-radius:50%;
-    animation-iteration-count: infinite;
+    border-color:black;
  }
+
+ 
 
 .btn_back_icon{
     position:relative;
@@ -68,14 +73,4 @@
     width: 20px;
     top:13px;
     transform:translatex(4px);
-}
-
-@keyframes borderAni{
-    0% {
-        border:solid 1px black;
-    }
-    100% {    
-        border:solid 1px black; 
-        border-radius:50%;
-    }
 }
