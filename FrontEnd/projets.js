@@ -181,30 +181,25 @@ function openModalEventListener(){
 	});
 })};
 
-
 function openModal(event){
 	event.preventDefault();
-	console.log("j'ouvre une modale");
 	try{
 		const target=document.querySelector(event.target.dataset.linkReference);
 		modal=target;
-			console.log(modal);
 		modal.style.display=null;
 		modal.removeAttribute("aria-hidden");
 		modal.setAttribute("aria-modal","true");
+		modal.addEventListener("click",closeModal);
+		modal.querySelector(".js-close-modal").addEventListener("click",closeModal);
+		modal.querySelector(".js-stop-modal").addEventListener("click",stopPropagation);
 		if(modal.querySelector(".gallery")){
 			gallery=document.querySelector(".modal .gallery");
 			creationCard(projects,false);
 			gallery=document.querySelector(".gallery");
-			console.log('je lance un eventlistener pour delete');
 			eventListenerDeleteProject();
 		}else{
-			console.log('je lance un eventlistener pour ajouter');
 			eventListenerAddProject();
 		};
-		modal.addEventListener("click",closeModal);
-		modal.querySelector(".js-close-modal").addEventListener("click",closeModal);
-		modal.querySelector(".js-stop-modal").addEventListener("click",stopPropagation);
 	}
 	catch(error){
 		console.log(error);
@@ -212,23 +207,17 @@ function openModal(event){
 }
 
 function closeModal(){
-
 	if(modal===null) {
 		return;
 	}else{
-		console.log("je ferme une modale");
 		modal.style.display="none";
 		modal.setAttribute("aria-hidden","true");
 		modal.removeAttribute("aria-modal");
 		// to delete the gallery content only on the modal which contain projects
 		if(modal.querySelector(".gallery")){
-			console.log(modal);
 			modal.querySelector(".gallery").innerHTML="";
-			console.log("je supprimer un eventlistener pour delete");
 			removeEventListenerDeleteProject();
 		}else{
-			console.log(modal);
-			console.log("je supprimer un eventlistener pour ajouter");
 			removeEventListenerAddProject();
 		}
 		gallery=document.querySelector(".gallery");
@@ -243,9 +232,12 @@ function stopPropagation(event){
 	event.stopPropagation();
 }
 
-
 function eventListenerDeleteProject(){
-	document.querySelectorAll(".trashcan").forEach(a=> {a.addEventListener("click", async function(e){
+	document.querySelectorAll(".trashcan").forEach(a=> {a.addEventListener("click", deleteOneProject)});
+	document.querySelector(".suppGallery").addEventListener("click",deleteAllProject);
+}
+
+async function deleteOneProject(e){
 		let idDeletedProj=e.target.parentElement.parentElement.getAttribute("data-id-project");;
 		if(await deleteProjectOnBDD(idDeletedProj)){
 			deleteProjectOnModal(idDeletedProj);
@@ -255,32 +247,27 @@ function eventListenerDeleteProject(){
 		}else{
 			alert("une erreur est survenue lors de la suppression du projet.");
 		}
-	})});
-	document.querySelector(".suppGallery").addEventListener("click",async function(){
-		// let listIdProject=document.querySelectorAll(".trashcan").map( a=> a.parentElement.getAttribute("data-id-project"));
-		let listIdProject=[];
-		let count=0;
-		document.querySelectorAll(".trashcan").forEach(a=>listIdProject.push(a.parentElement.getAttribute("data-id-project")))
-		listIdProject.forEach(async function(a){
-			if(deleteProjectOnBDD(a)){
-				deleteProjectOnModal(a);
-				count+=1;
-			}
-		})
-		if(count===listIdProject.length){
-			alert("Tous les projets ont été supprimés avec succès !")
-		}else{
-			alert("Tous les projects n'ont pas pu être supprimés correctement")
+}
+
+function deleteAllProject(){
+	// let listIdProject=document.querySelectorAll(".trashcan").map( a=> a.parentElement.getAttribute("data-id-project"));
+	let listIdProject=[];
+	let count=0;
+	document.querySelectorAll(".trashcan").forEach(a=>listIdProject.push(a.parentElement.getAttribute("data-id-project")))
+	listIdProject.forEach(async function(a){
+		if(deleteProjectOnBDD(a)){
+			deleteProjectOnModal(a);
+			count+=1;
 		}
-		closeModal();
-		displaySelection();
-	});
+	})
+	if(count===listIdProject.length){
+		alert("Tous les projets ont été supprimés avec succès !")
+	}else{
+		alert("Tous les projects n'ont pas pu être supprimés correctement")
+	}
+	closeModal();
+	displaySelection();
 }
-
-function removeEventListenerDeleteProject(){
-	document.querySelectorAll(".trashcan").forEach(a=> {a.removeEventListener("click")})
-}
-
 
 function deleteProjectOnModal(idDeletedElement){
 	document.querySelector(`#modal2 figure[data-id-project='${idDeletedElement}']`).remove();
@@ -309,24 +296,28 @@ async function deleteProjectOnBDD(idDeletedElement){
 		catch(error){
 			console.log(response);
 			alert(error.message);
-			// throw(error)
 		}
 	}else{
 		alert("Une erreur s'est produite, veillez-vous reconnecter");
         document.location.href="./login.html";
 	}
 }
-
 function getToken(){
 	let tokenKey=JSON.parse(window.localStorage.getItem("token"));
 	return tokenKey;
 }
 
+function removeEventListenerDeleteProject(){
+	document.querySelectorAll(".trashcan").forEach(a=> {a.removeEventListener("click")});
+	document.querySelector(".suppGallery").removeEventListener("click",deleteAllProject);
+}
+
+
 
 function eventListenerAddProject(){
 	const form = modal.querySelector("form");
-	console.log(form);
-	form.addEventListener("submit", function(e){eventListenerAddProjectEffect(e)});
+	form.addEventListener("submit", eventListenerAddProjectEffect);
+	form.addEventListener("change",changeButtonColor);
 }
 
 async function eventListenerAddProjectEffect(e){
@@ -336,13 +327,12 @@ async function eventListenerAddProjectEffect(e){
 		let inputTitle = document.querySelector("#title-nw-project").value.trim();
 		let inputCategory = document.querySelector("#category-nw-project").value;
 		let inputIdCategory = filters.findIndex(elem => elem===inputCategory);
-		// console.log(inputIdCategory);
 		let inputPicture = document.querySelector("#btn-add-picture").files[0];
 
 		if(inputTitle && inputIdCategory && inputPicture){
 			if(await postNewProjectOnBdd(inputTitle,inputIdCategory,inputPicture)){
 				alert("Le projet a été ajouté avec succès !")
-				/*form reset*/
+				//form reset
 				const img =form.querySelector("#output");
 				img.style.display="none";
 				img.src=null;
@@ -350,7 +340,7 @@ async function eventListenerAddProjectEffect(e){
 				document.querySelector("#category-nw-project").value=null;
 				const input=form.querySelector("#input");
 				input.style.display=null;
-				// closeModal();
+				document.querySelector(".add-picture-button").style.backgroundColor=null;
 				// ou alors je push mon nouveau projet dans ma liste mais je n'ai pas toutes les infos
 				localStorage.removeItem("projects");
 				await dataProjectsLoading();
@@ -367,9 +357,8 @@ async function eventListenerAddProjectEffect(e){
 
 function removeEventListenerAddProject(){
 	const form = modal.querySelector("form");
-	console.log(form);
-	form.removeEventListener("submit",function(e){eventListenerAddProjectEffect(e)});
-	console.log("listener ajout supp");
+	form.removeEventListener("submit",eventListenerAddProjectEffect);
+	form.removeEventListener("change",changeButtonColor);
 }
 
 async function postNewProjectOnBdd(title,idCategory,picture){
@@ -379,7 +368,6 @@ async function postNewProjectOnBdd(title,idCategory,picture){
 		formData.append("category",idCategory);
 		formData.append("image",picture);
 		let tokenKey=getToken();
-		console.log(formData);
 		let response = await fetch('http://localhost:5678/api/works/', {
 			method: 'POST',
 			headers: {
@@ -396,5 +384,16 @@ async function postNewProjectOnBdd(title,idCategory,picture){
 	catch(error){
 		console.log(response);
 		alert(error.message);
+	}
+}
+
+function changeButtonColor(){
+	let inputTitle = document.querySelector("#title-nw-project").value.trim();
+	let inputCategory = document.querySelector("#category-nw-project").value;
+	let inputIdCategory = filters.findIndex(elem => elem===inputCategory);
+	let inputPicture = document.querySelector("#btn-add-picture").files[0];
+	
+	if(inputTitle && inputIdCategory && inputPicture){
+		document.querySelector(".add-picture-button").style.backgroundColor = "#1D6154";
 	}
 }

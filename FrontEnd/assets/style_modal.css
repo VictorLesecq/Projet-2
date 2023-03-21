@@ -135,3 +135,8 @@ figcaption a:hover{
     width:80%;
     margin-top:20px;
 }
+
+.add-picture-button{
+    background-color: #A7A7A7;
+    padding-inline:80px;
+}
