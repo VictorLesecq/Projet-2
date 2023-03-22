@@ -4,11 +4,10 @@ import { creationCard } from "./projets.js";
 const all ="Tous";
 let selection=[all];
 
+
 export function buttonAllClicked(){
 	const buttonAll=document.querySelector(".buttonAll");
-	buttonAll.addEventListener("click",function(){
-		buttonAllEffect()
-	});
+	buttonAll.addEventListener("click", buttonAllEffect);
 };
 
 function buttonAllEffect(){		
@@ -33,12 +32,9 @@ export function buttonClicked(){
 	//Actions when all buttons (except "all") are clicked
 	const sortedButton = document.querySelectorAll(".btn-filter");
 	for (let i=1;i<sortedButton.length;i++){
-		sortedButton[i].addEventListener("click",function(event){
-			buttonEffect(event)
-		})
+		sortedButton[i].addEventListener("click",buttonEffect)
 	}
 }
-
 function buttonEffect(event){	
 	let proj = JSON.parse(window.localStorage.getItem("projects"));
 	const buttonAll=document.querySelector(".buttonAll");

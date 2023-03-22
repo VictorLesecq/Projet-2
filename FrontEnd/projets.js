@@ -176,7 +176,7 @@ function logout(){
 function openModalEventListener(){
 	const btnModifProject= document.querySelectorAll(".js-modal");
 	btnModifProject.forEach(a=> {a.addEventListener("click",function(event){
-		closeModal(event);
+		closeModal(event); //if a modal is already open
 		openModal(event);
 	});
 })};
@@ -323,7 +323,6 @@ function eventListenerAddProject(){
 async function eventListenerAddProjectEffect(e){
 		e.preventDefault();
 		const form = modal.querySelector("form");
-
 		let inputTitle = document.querySelector("#title-nw-project").value.trim();
 		let inputCategory = document.querySelector("#category-nw-project").value;
 		let inputIdCategory = filters.findIndex(elem => elem===inputCategory);
@@ -341,7 +340,6 @@ async function eventListenerAddProjectEffect(e){
 				const input=form.querySelector("#input");
 				input.style.display=null;
 				document.querySelector(".add-picture-button").style.backgroundColor=null;
-				// ou alors je push mon nouveau projet dans ma liste mais je n'ai pas toutes les infos
 				localStorage.removeItem("projects");
 				await dataProjectsLoading();
 				closeModal();
