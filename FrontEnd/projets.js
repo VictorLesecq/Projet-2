@@ -219,6 +219,7 @@ function closeModal(){
 			removeEventListenerDeleteProject();
 		}else{
 			removeEventListenerAddProject();
+			resetFormAddProject();
 		}
 		gallery=document.querySelector(".gallery");
 		modal.removeEventListener("click",closeModal);
@@ -332,14 +333,6 @@ async function eventListenerAddProjectEffect(e){
 			if(await postNewProjectOnBdd(inputTitle,inputIdCategory,inputPicture)){
 				alert("Le projet a été ajouté avec succès !")
 				//form reset
-				const img =form.querySelector("#output");
-				img.style.display="none";
-				img.src=null;
-				document.querySelector("#title-nw-project").value=null;
-				document.querySelector("#category-nw-project").value=null;
-				const input=form.querySelector("#input");
-				input.style.display=null;
-				document.querySelector(".add-picture-button").style.backgroundColor=null;
 				localStorage.removeItem("projects");
 				await dataProjectsLoading();
 				closeModal();
@@ -351,6 +344,17 @@ async function eventListenerAddProjectEffect(e){
 		}else{
 			alert("Le formulaire n'est pas complet, veuillez réessayer");
 		}
+}
+
+function resetFormAddProject(){
+	const form = modal.querySelector("form");
+	form.reset();
+	const img =form.querySelector("#output");
+	img.style.display="none";
+	img.removeAttribute("src");
+	const input=form.querySelector("#input");
+	input.style.display=null;
+	document.querySelector(".add-picture-button").style.backgroundColor=null;
 }
 
 function removeEventListenerAddProject(){
